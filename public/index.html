@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>🌼IELTS vocab learning🌼 --- Tuyết</title>
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <style>
+      * { box-sizing: border-box; }
+      body { 
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        max-width:900px; margin:0 auto; padding:20px 16px;
+        background: #f6f9fd;
+        min-height: 100vh;
+      }
+      h1 { text-align: center; color: black; font-size: 28px; margin-bottom: 8px; }
+      p { color: #6a5acd; text-align: center; margin-bottom: 20px; font-size: 14px; }
+      textarea { 
+        width:100%; height:140px; padding:12px 14px; border: 2px solid #ffb6c1; border-radius: 14px;
+        font-family: inherit; font-size: 14px; resize: vertical;
+        background: linear-gradient(135deg, rgba(255,250,250,0.95) 0%, rgba(255,245,245,0.95) 100%);
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(255,182,193,0.15);
+      }
+      textarea:focus { 
+        outline: none; border-color: #ff9a9e; 
+        box-shadow: 0 6px 25px rgba(255,154,158,0.25); 
+        transform: translateY(-2px);
+        background: linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(255,250,250,1) 100%);
+      }
+      textarea:hover:not(:focus) {
+        box-shadow: 0 5px 20px rgba(255,182,193,0.2);
+      }
+      .list { margin-top:16px }
+      .item { padding:6px 0; border-bottom:1px solid #eee }
+      /* Very cute card for the English word */
+      .card {
+        position:relative;
+        background: linear-gradient(135deg,#ffe29f 0%,#ff9a9e 40%,#ffb6c1 100%);
+        border-radius:20px;
+        padding:18px 24px;
+        box-shadow: 0 12px 30px rgba(255, 182, 193, 0.25), inset 0 -6px 20px rgba(255,255,255,0.12);
+        display:inline-flex; align-items:center; justify-content:center; min-width:220px; max-width:420px;
+        transform-origin:center; animation: float 4s ease-in-out infinite;
+      }
+      .card::before{ content:'✨'; position:absolute; left:10px; top:-10px; font-size:18px; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.12)); }
+      .card::after{ content:'�'; position:absolute; right:10px; bottom:-10px; font-size:20px; transform:rotate(-10deg); }
+      .card-word { font-weight:800; font-size:30px; color:#7a1f5a; letter-spacing:0.6px; text-shadow: 0 2px 8px rgba(255,255,255,0.18); }
+      @keyframes float{ 0%{ transform:translateY(0) } 50%{ transform:translateY(-6px) } 100%{ transform:translateY(0) } }
+      /* add a tiny sparkle when the word appears */
+      .card-pop{ animation: pop .36s ease both; }
+      @keyframes pop{ 0%{ transform:scale(.92); opacity:0 } 60%{ transform:scale(1.06); opacity:1 } 100%{ transform:scale(1) } }
+      /* toast notification */
+      .toast-wrap{ position:fixed; top:30px; left:50%; transform:translateX(-50%); z-index:9999; display:flex; flex-direction:column; gap:8px; align-items:center; }
+      .toast{ background:#a8e6a1; padding:12px 24px; border-radius:10px; box-shadow:0 8px 20px rgba(168, 230, 161, 0.3); color:#2d5a2d; font-weight:700; border:none; opacity:0; transform:translateY(-8px); transition:opacity .25s, transform .25s; font-size:15px; }
+      .toast.show{ opacity:1; transform:translateY(0); }
+      /* Button styling */
+      button {
+        cursor: pointer;
+        font-weight: 700;
+        border: none;
+        border-radius: 14px;
+        padding: 12px 20px;
+        font-size: 15px;
+        background: linear-gradient(135deg, #ffe29f 0%, #ffb6c1 100%);
+        color: #7a1b4d;
+        box-shadow: 0 4px 16px rgba(255,182,193,0.18), 0 1.5px 0 #fff inset;
+        transition: all 0.22s cubic-bezier(.4,2,.6,1), box-shadow 0.18s;
+        position: relative;
+        overflow: hidden;
+      }
+      button:active {
+        transform: scale(0.96) rotate(-1deg);
+        box-shadow: 0 2px 8px rgba(255,182,193,0.12);
+      }
+      button:hover {
+        background: linear-gradient(135deg, #ffb6c1 0%, #ffe29f 100%);
+        color: #d72660;
+        box-shadow: 0 8px 28px rgba(255,182,193,0.28), 0 2px 0 #fff inset;
+        transform: scale(1.04) rotate(1deg);
+      }
+      button:before {
+        content: '✨';
+        position: absolute;
+        left: 10px;
+        top: 7px;
+        font-size: 16px;
+        opacity: 0.7;
+        pointer-events: none;
+        transition: opacity 0.2s;
+      }
+      button:active:before, button:hover:before {
+        opacity: 1;
+        animation: sparkle 0.7s linear;
+      }
+      @keyframes sparkle {
+        0% { transform: scale(0.7) rotate(0deg); opacity: 0.5; }
+        60% { transform: scale(1.2) rotate(20deg); opacity: 1; }
+        100% { transform: scale(1) rotate(-10deg); opacity: 0.7; }
+      }
+      #check { background: linear-gradient(135deg, #ff6b9d, #ffa07a); color: white; box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3); }
+      #check:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4); }
+      #saveAll { background: linear-gradient(135deg, #87ceeb, #b0e0e6); color: #2c5aa0; box-shadow: 0 4px 12px rgba(135, 206, 235, 0.2); }
+      #saveAll:hover { transform: translateY(-2px); }
+      #showMarked { background: linear-gradient(135deg, #dda0dd, #ee82ee); color: #4b0082; box-shadow: 0 4px 12px rgba(221, 160, 221, 0.2); }
+      #showMarked:hover { transform: translateY(-2px); }
+      #mark:hover, #next:hover { transform: translateY(-2px); }
+      input#answer { border: 2px solid #ffb6c1; border-radius: 10px; padding: 10px !important; font-size: 14px; transition: all 0.3s; background: rgba(255,255,255,0.9); }
+      input#answer:focus { outline: none; border-color: #ff9a9e; box-shadow: 0 0 8px rgba(255,154,158,0.3); }
+      #result { color: #6a1b4d; font-weight: 600; margin-top: 8px; }
+      #practice { background: rgba(255,255,255,0.7); padding: 16px; border-radius: 14px; margin-top: 16px; }
+      hr { border: none; border-top: 2px solid rgba(255,154,158,0.3); margin: 20px 0; }
+      #markedList h3 { color: #6a1b4d; margin-top: 16px; }
+      /* Input section styling */
+      .input-section { 
+        background: rgba(255,255,255,0.6); 
+        padding: 16px; 
+        border-radius: 14px; 
+        transition: all 0.3s;
+      }
+      .input-section:hover {
+        background: rgba(255,255,255,0.8);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      }
+      .eng-label { 
+        background: linear-gradient(135deg, #ff6b9d, #ffa07a) !important;
+        color: white !important;
+        box-shadow: 0 4px 12px rgba(255, 107, 157, 0.25) !important;
+      }
+      .vnm-label { 
+        background: linear-gradient(135deg, #87ceeb, #b0e0e6) !important;
+        color: #2c5aa0 !important;
+        box-shadow: 0 4px 12px rgba(135, 206, 235, 0.25) !important;
+      }
+      @keyframes slideUp {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <h1 style="color:black">🌼IELTS vocab learning🌼 --- Tuyết</h1>
+    <link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;600;700&family=Pacifico&family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
+    <p style="font-family: 'Mali', 'Segoe Script', 'Comic Sans MS', cursive, sans-serif; font-size: 1.5em; margin-bottom: 20px; color: #228B22; letter-spacing: 0.5px; font-weight: 600;">Một ngày học một chút ✨✨</p>
+
+    <div style="display:flex; gap:12px;">
+      <div style="flex:1" class="input-section">
+        <label class="eng-label" style="display:block; margin-bottom:8px; padding:6px 10px; border-radius:8px; font-weight:700; font-size:15px; letter-spacing:0.5px;"><strong>🇬🇧 English words</strong></label>
+        <textarea id="eng" placeholder="one english word per line"></textarea>
+      </div>
+      <div style="flex:1" class="input-section">
+        <label class="vnm-label" style="display:block; margin-bottom:8px; padding:6px 10px; border-radius:8px; font-weight:700; font-size:15px; letter-spacing:0.5px;"><strong>🇻🇳 Vietnamese meanings</strong></label>
+        <textarea id="vnm" placeholder="one meaning per line"></textarea>
+      </div>
+    </div>
+
+    <div style="margin-top:8px">
+      <button id="check">Check!</button>
+      <button id="saveAll">Save full list to storage</button>
+      <button id="showMarked">Show marked list</button>
+      <button id="clearMarked" style="background: linear-gradient(135deg, #ff6b6b, #ff8787); color: white; box-shadow: 0 4px 12px rgba(255, 107, 107, 0.2);">🗑️ Clear marked words</button>
+    </div>
+
+    <hr />
+
+    <div id="practice" style="display:none">
+      <div style="font-size:20px; margin-bottom:8px">Word <span id="pos"></span> of <span id="total"></span></div>
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px">
+        <div class="card"><div id="word" class="card-word"></div></div>
+        <input id="answer" placeholder="enter vietnamese meaning" style="flex:1; padding:8px" />
+      </div>
+      <div style="margin-bottom:12px; display:flex; gap:8px;">
+        <button id="mark" style="flex:1; padding:10px; background:linear-gradient(135deg,#ffd700,#ffed4e); border:none; border-radius:10px; font-weight:600; color:#6a1b4d; cursor:pointer; transition:all 0.3s; box-shadow:0 4px 12px rgba(255,215,0,0.2)">💚 Mark this word</button>
+        <button id="next" style="flex:1; padding:10px; background:linear-gradient(135deg,#87ceeb,#b0e0e6); border:none; border-radius:10px; font-weight:600; color:#2c5aa0; cursor:pointer; transition:all 0.3s; box-shadow:0 4px 12px rgba(135,206,235,0.2)">➡️ Next word</button>
+      </div>
+      <!-- Congratulations Dialog -->
+      <div id="congratsDialog" style="position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:none; align-items:center; justify-content:center; z-index:10000;">
+        <div style="background:white; border-radius:20px; padding:32px; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.3); max-width:450px; animation:slideUp 0.4s ease;">
+          <div style="font-size:48px; margin-bottom:16px;">🎉</div>
+          <h2 style="color:#6a1b4d; font-size:28px; margin:0 0 12px 0;">Excellent work!</h2>
+          <p style="color:#666; font-size:16px; margin:0 0 24px 0;">Congratulations! You've completed your practice session today. Keep up the great work! 🌟</p>
+          <button id="congratsClose" style="padding:12px 32px; background:linear-gradient(135deg,#87ceeb,#b0e0e6); color:#2c5aa0; border:none; border-radius:10px; font-weight:600; font-size:16px; cursor:pointer; transition:all 0.3s; box-shadow:0 4px 12px rgba(135,206,235,0.2);">Close</button>
+        </div>
+      </div>
+      <div id="result" style="color:#333; font-style:italic"></div>
+      <div style="font-size:12px; color:#666; text-align:center; padding:10px; background:rgba(200,200,200,0.1); border-radius:8px; margin-top:12px;">
+        💡 <strong>Enter</strong> = show correct meaning | <strong>Ctrl+Enter</strong> = mark & learn again | <strong>Tab</strong> = next word
+      </div>
+    </div>
+
+    <div id="markedList" style="margin-top:12px"></div>
+    <div class="toast-wrap" id="toastWrap" aria-live="polite"></div>
+
+    <script>
+      const engTa = document.getElementById('eng');
+      const vnmTa = document.getElementById('vnm');
+      const checkBtn = document.getElementById('check');
+      const saveAllBtn = document.getElementById('saveAll');
+      const showMarkedBtn = document.getElementById('showMarked');
+      const clearMarkedBtn = document.getElementById('clearMarked');
+
+        // Synchronize textarea heights
+        function syncTextAreaHeight(source, target) {
+          target.style.height = source.style.height;
+        }
+        engTa.addEventListener('input', () => {
+          engTa.style.height = '';
+          engTa.style.height = engTa.scrollHeight + 'px';
+          syncTextAreaHeight(engTa, vnmTa);
+        });
+        vnmTa.addEventListener('input', () => {
+          vnmTa.style.height = '';
+          vnmTa.style.height = vnmTa.scrollHeight + 'px';
+          syncTextAreaHeight(vnmTa, engTa);
+        });
+        // Also sync on manual resize (mouse drag)
+        engTa.addEventListener('mouseup', () => syncTextAreaHeight(engTa, vnmTa));
+        vnmTa.addEventListener('mouseup', () => syncTextAreaHeight(vnmTa, engTa));
+
+      const practice = document.getElementById('practice');
+      const wordEl = document.getElementById('word');
+      const answerInput = document.getElementById('answer');
+      const markBtn = document.getElementById('mark');
+      const nextBtn = document.getElementById('next');
+      const result = document.getElementById('result');
+      const posEl = document.getElementById('pos');
+      const totalEl = document.getElementById('total');
+      const markedListEl = document.getElementById('markedList');
+
+      let list = [];
+      let idx = 0;
+      let currentMarked = false;
+
+      function shuffle(a){
+        for(let i=a.length-1;i>0;i--){
+          const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];
+        }
+      }
+
+      function startPractice(pairs){
+        list = pairs.slice(); shuffle(list);
+        idx = 0; practice.style.display = list.length ? 'block':'none';
+        renderCurrent();
+      }
+
+      function renderCurrent(){
+        if(idx >= list.length){
+          wordEl.textContent = '';
+          result.textContent = 'Practice finished.';
+          posEl.textContent = list.length;
+          totalEl.textContent = list.length;
+          practice.style.display = 'none';
+          return;
+        }
+        const cur = list[idx];
+        wordEl.textContent = cur.eng;
+        answerInput.value = '';
+        result.textContent = '';
+        posEl.textContent = idx+1;
+        totalEl.textContent = list.length;
+        currentMarked = false;
+        
+        // Check if this is the last word and update button accordingly
+        const isLastWord = (idx === list.length - 1);
+        if(isLastWord){
+          nextBtn.textContent = '🎉 Finish!';
+          nextBtn.style.background = 'linear-gradient(135deg,#87ceeb,#b0e0e6)';
+          nextBtn.style.boxShadow = '0 4px 12px rgba(135,206,235,0.3)';
+        } else {
+          nextBtn.textContent = '➡️ Next word';
+          nextBtn.style.background = 'linear-gradient(135deg,#87ceeb,#b0e0e6)';
+          nextBtn.style.boxShadow = '0 4px 12px rgba(135,206,235,0.2)';
+        }
+        
+        // focus the answer box for quick typing
+        answerInput.focus();
+        // add a quick pop animation to the card when the word changes
+        const card = document.querySelector('.card');
+        if(card){
+          card.classList.remove('card-pop');
+          // trigger reflow to restart animation
+          void card.offsetWidth;
+          card.classList.add('card-pop');
+        }
+      }
+
+      checkBtn.addEventListener('click', ()=>{
+        const engLines = engTa.value.split(/\r?\n/).map(s=>s.trim());
+        const vnmLines = vnmTa.value.split(/\r?\n/).map(s=>s.trim());
+        const pairs = [];
+        const n = Math.max(engLines.length, vnmLines.length);
+        for(let i=0;i<n;i++){ const e=(engLines[i]||'').trim(); const v=(vnmLines[i]||'').trim(); if(e) pairs.push({eng:e, vnm:v}); }
+        if(pairs.length===0){ alert('Please enter at least one pair'); return; }
+        startPractice(pairs);
+      });
+
+      saveAllBtn.addEventListener('click', async ()=>{
+        const engLines = engTa.value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+        await fetch('/api/vocabs', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ vocabs: engLines }) });
+        alert('Saved English words to storage (only english strings saved).');
+      });
+
+      markBtn.addEventListener('click', async ()=>{
+        if(idx>=list.length) return;
+        const cur = list[idx];
+        // persist marked word
+        await fetch('/api/marked', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ word: cur }) });
+        currentMarked = true;
+        // show simple success notification
+        showToast('Marked successfully!');
+        // add this word back to the list so user will see it again
+        list.push(cur);
+        // advance to next word immediately
+        idx++;
+        if (idx >= list.length) { renderCurrent(); return; }
+        renderCurrent();
+      });
+
+      nextBtn.addEventListener('click', ()=>{
+        if(idx>=list.length) return;
+        
+        // Check if this is the last word before advancing
+        const isLastWord = (idx === list.length - 1);
+        
+        // if not marked, remove this word from list (do not show again)
+        if(!currentMarked){
+          list.splice(idx,1);
+        } else {
+          // move past this word
+          idx++;
+        }
+        // if we removed the last item, ensure idx is within bounds
+        if(idx >= list.length) { 
+          if(isLastWord){
+            // Show congratulations dialog
+            showCongrats();
+          } else {
+            renderCurrent();
+          }
+          return;
+        }
+        renderCurrent();
+      });
+
+      showMarkedBtn.addEventListener('click', async ()=>{
+        const resp = await fetch('/api/marked');
+        const data = await resp.json();
+        const m = data.marked || [];
+        if(!m.length){ markedListEl.textContent = 'No marked words.'; return; }
+        markedListEl.innerHTML = '<h3>Marked words to re-learn</h3>' + m.map(x=>'<div class="item">'+(x.eng)+' — '+(x.vnm||'')+'</div>').join('');
+      });
+
+      clearMarkedBtn.addEventListener('click', async ()=>{
+        if(confirm('Are you sure you want to clear all marked words?')){
+          const resp = await fetch('/api/marked/clear', { method: 'POST', headers: {'Content-Type':'application/json'} });
+          const data = await resp.json();
+          if(data.ok){
+            markedListEl.innerHTML = '';
+            showToast('Marked words cleared!');
+          } else {
+            alert('Error clearing marked words');
+          }
+        }
+      });
+
+      // Reveal on Enter, advance on Tab, mark on Ctrl+Enter (or Cmd+Enter)
+      answerInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          // mark this word (this will also advance)
+          markBtn.click();
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          if (idx < list.length) {
+            result.textContent = 'Correct: ' + (list[idx].vnm || '(no meaning provided)');
+          }
+        } else if (e.key === 'Tab') {
+          e.preventDefault();
+          // use Next button behavior to advance (removes if not marked)
+          nextBtn.click();
+        }
+      });
+
+      // congratulations dialog helper
+      function showCongrats(){
+        const dialog = document.getElementById('congratsDialog');
+        const closeBtn = document.getElementById('congratsClose');
+        if(!dialog) return;
+        dialog.style.display = 'flex';
+        closeBtn.addEventListener('click', ()=>{ dialog.style.display = 'none'; });
+        // close dialog when clicking outside
+        dialog.addEventListener('click', (e)=>{ if(e.target === dialog) dialog.style.display = 'none'; });
+      }
+
+      // toast helper - simple notification at top center
+      function showToast(msg, ms = 2000){
+        const wrap = document.getElementById('toastWrap');
+        if(!wrap) return;
+        const t = document.createElement('div'); t.className='toast'; t.textContent = msg;
+        wrap.appendChild(t);
+        // allow CSS transition
+        requestAnimationFrame(()=> t.classList.add('show'));
+        setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=> t.remove(), 250); }, ms);
+      }
+
+    </script>
+  </body>
+</html>
