@@ -254,8 +254,8 @@
         if(idx >= list.length){
           wordEl.textContent = '';
           result.textContent = 'Practice finished.';
-          posEl.textContent = list.length;
-          totalEl.textContent = list.length + removedCount;
+          posEl.textContent = (removedCount + list.length + 1);
+          totalEl.textContent = (removedCount + list.length);
           practice.style.display = 'none';
           return;
         }
@@ -269,8 +269,8 @@
         }
         answerInput.value = '';
         result.textContent = '';
-        posEl.textContent = idx+1;
-        totalEl.textContent = list.length + removedCount;
+        posEl.textContent = (idx + 1 + removedCount);
+        totalEl.textContent = (removedCount + list.length);
         currentMarked = false;
         
         // Check if this is the last word and update button accordingly
