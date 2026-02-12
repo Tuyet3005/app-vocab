@@ -16,11 +16,11 @@
       h1 { text-align: center; color: black; font-size: 28px; margin-bottom: 8px; }
       p { color: #6a5acd; text-align: center; margin-bottom: 20px; font-size: 14px; }
       textarea { 
-        width:100%; height:140px; padding:12px 14px; border: 2px solid #ffb6c1; border-radius: 14px;
-        font-family: inherit; font-size: 14px; resize: vertical;
-        background: linear-gradient(135deg, rgba(255,250,250,0.95) 0%, rgba(255,245,245,0.95) 100%);
-        transition: all 0.3s;
-        box-shadow: 0 4px 15px rgba(255,182,193,0.15);
+          width:100%; height:150px; max-height:150px; padding:12px 14px; border: 2px solid #ffb6c1; border-radius: 14px;
+          font-family: inherit; font-size: 14px; resize: vertical;
+          background: linear-gradient(135deg, rgba(255,250,250,0.95) 0%, rgba(255,245,245,0.95) 100%);
+          transition: all 0.3s;
+          box-shadow: 0 4px 15px rgba(255,182,193,0.15);
       }
       textarea:focus { 
         outline: none; border-color: #ff9a9e; 
@@ -156,7 +156,8 @@
     </div>
 
     <div style="margin-top:8px">
-      <button id="check">Check!</button>
+      <button id="check">Check E→V</button>
+      <button id="checkVE">Check V→E</button>
       <button id="saveAll">Save full list to storage</button>
       <button id="showMarked">Show marked list</button>
       <button id="clearMarked" style="background: linear-gradient(135deg, #ff6b6b, #ff8787); color: white; box-shadow: 0 4px 12px rgba(255, 107, 107, 0.2);">🗑️ Clear marked words</button>
@@ -196,6 +197,7 @@
       const engTa = document.getElementById('eng');
       const vnmTa = document.getElementById('vnm');
       const checkBtn = document.getElementById('check');
+      const checkVEBtn = document.getElementById('checkVE');
       const saveAllBtn = document.getElementById('saveAll');
       const showMarkedBtn = document.getElementById('showMarked');
       const clearMarkedBtn = document.getElementById('clearMarked');
@@ -231,6 +233,7 @@
       let list = [];
       let idx = 0;
       let currentMarked = false;
+      let removedCount = 0;
 
       function shuffle(a){
         for(let i=a.length-1;i>0;i--){
@@ -239,8 +242,11 @@
       }
 
       function startPractice(pairs){
+        // Assign original index to each pair
+        pairs = pairs.map((pair, i) => ({...pair, originalIndex: i+1}));
         list = pairs.slice(); shuffle(list);
         idx = 0; practice.style.display = list.length ? 'block':'none';
+        removedCount = 0;
         renderCurrent();
       }
 
@@ -249,16 +255,22 @@
           wordEl.textContent = '';
           result.textContent = 'Practice finished.';
           posEl.textContent = list.length;
-          totalEl.textContent = list.length;
+          totalEl.textContent = list.length + removedCount;
           practice.style.display = 'none';
           return;
         }
         const cur = list[idx];
-        wordEl.textContent = cur.eng;
+        if(window.practiceMode === 'VE'){
+          wordEl.textContent = cur.vnm || '';
+          answerInput.placeholder = 'enter english word';
+        }else{
+          wordEl.textContent = cur.eng;
+          answerInput.placeholder = 'enter vietnamese meaning';
+        }
         answerInput.value = '';
         result.textContent = '';
         posEl.textContent = idx+1;
-        totalEl.textContent = list.length;
+        totalEl.textContent = list.length + removedCount;
         currentMarked = false;
         
         // Check if this is the last word and update button accordingly
@@ -286,11 +298,23 @@
       }
 
       checkBtn.addEventListener('click', ()=>{
+        window.practiceMode = 'EV';
         const engLines = engTa.value.split(/\r?\n/).map(s=>s.trim());
         const vnmLines = vnmTa.value.split(/\r?\n/).map(s=>s.trim());
         const pairs = [];
         const n = Math.max(engLines.length, vnmLines.length);
         for(let i=0;i<n;i++){ const e=(engLines[i]||'').trim(); const v=(vnmLines[i]||'').trim(); if(e) pairs.push({eng:e, vnm:v}); }
+        if(pairs.length===0){ alert('Please enter at least one pair'); return; }
+        startPractice(pairs);
+      });
+
+      checkVEBtn.addEventListener('click', ()=>{
+        window.practiceMode = 'VE';
+        const engLines = engTa.value.split(/\r?\n/).map(s=>s.trim());
+        const vnmLines = vnmTa.value.split(/\r?\n/).map(s=>s.trim());
+        const pairs = [];
+        const n = Math.max(engLines.length, vnmLines.length);
+        for(let i=0;i<n;i++){ const e=(engLines[i]||'').trim(); const v=(vnmLines[i]||'').trim(); if(v) pairs.push({eng:e, vnm:v}); }
         if(pairs.length===0){ alert('Please enter at least one pair'); return; }
         startPractice(pairs);
       });
@@ -319,26 +343,20 @@
 
       nextBtn.addEventListener('click', ()=>{
         if(idx>=list.length) return;
-        
-        // Check if this is the last word before advancing
         const isLastWord = (idx === list.length - 1);
-        
-        // if not marked, remove this word from list (do not show again)
         if(!currentMarked){
-          list.splice(idx,1);
+            list.splice(idx,1);
+            removedCount++;
         } else {
-          // move past this word
-          idx++;
+            idx++;
         }
-        // if we removed the last item, ensure idx is within bounds
         if(idx >= list.length) { 
-          if(isLastWord){
-            // Show congratulations dialog
-            showCongrats();
-          } else {
-            renderCurrent();
-          }
-          return;
+            if(isLastWord){
+                showCongrats();
+            } else {
+                renderCurrent();
+            }
+            return;
         }
         renderCurrent();
       });
@@ -349,6 +367,11 @@
         const m = data.marked || [];
         if(!m.length){ markedListEl.textContent = 'No marked words.'; return; }
         markedListEl.innerHTML = '<h3>Marked words to re-learn</h3>' + m.map(x=>'<div class="item">'+(x.eng)+' — '+(x.vnm||'')+'</div>').join('');
+        // Scroll to marked list
+        setTimeout(() => {
+            markedListEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            window.scrollBy(0, -60); // offset for header
+        }, 200);
       });
 
       clearMarkedBtn.addEventListener('click', async ()=>{
@@ -373,7 +396,11 @@
         } else if (e.key === 'Enter') {
           e.preventDefault();
           if (idx < list.length) {
-            result.textContent = 'Correct: ' + (list[idx].vnm || '(no meaning provided)');
+            if(window.practiceMode === 'VE'){
+                result.textContent = 'Correct: ' + (list[idx].eng || '(no word provided)');
+            }else{
+                result.textContent = 'Correct: ' + (list[idx].vnm || '(no meaning provided)');
+            }
           }
         } else if (e.key === 'Tab') {
           e.preventDefault();
