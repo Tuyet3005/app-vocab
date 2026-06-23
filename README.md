@@ -2,6 +2,8 @@
 
 Simple Node.js + Express app for entering English vocabulary lists, which helps users learn and practice vocabulary.
 
+Using GitHub Copilot to vibe code an app which turns simple English-Vietnamese word lists into a quick random vocabulary practice tool with review marking and local storage.
+
 ## Online version
 
 Anyone with the link can use the app online at https://app-vocab.vercel.app/
